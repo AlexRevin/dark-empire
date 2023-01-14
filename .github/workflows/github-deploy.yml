@@ -1,0 +1,16 @@
+name: Reload Empire Core
+run-name: ${{ github.actor }} reloads core
+on: [push]
+env:
+  DEPLOY_HOST: hj.ee
+jobs:
+  Build-and-Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ssh and reload the core
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: bash -c dark-empire/deploy.sh
