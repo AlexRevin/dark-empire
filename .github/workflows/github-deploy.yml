@@ -13,4 +13,4 @@ jobs:
           host: ${{ env.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: bash -c dark-empire/deploy.sh
+          script: bash -c dark-empire/core/deploy.sh
