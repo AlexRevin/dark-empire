@@ -35,7 +35,34 @@ services:
       - "traefik.http.middlewares.admin.basicauth.usersfile=/letsencrypt/users"
     networks:
       - web
-
+  minio:
+    image: quay.io/minio/minio:RELEASE.2023-01-12T02-06-16Z
+    command: server --console-address ":9001" /data
+    volumes:
+      - ./data:/data
+      - ./config:/root/.minio
+    environment:
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_DOMAIN=minio.hj.ee
+      - MINIO_SERVER_URL=https://minio.hj.ee
+      - MINIO_BROWSER_REDIRECT_URL=https://console.minio.hj.ee
+    labels:
+      - "traefik.enable=true"
+      # Console
+      - "traefik.http.routers.minio-console.rule=Host(`console.minio.hj.ee`)"
+      - "traefik.http.routers.minio-console.entrypoints=websecure"
+      - "traefik.http.routers.minio-console.tls.certresolver=myresolver"
+      - "traefik.http.routers.minio-console.service=minio-console"
+      - "traefik.http.services.minio-console.loadbalancer.server.port=9001"
+      # APi
+      - "traefik.http.routers.minio.rule=Host(`minio.hj.ee`)"
+      - "traefik.http.routers.minio.entrypoints=websecure"
+      - "traefik.http.routers.minio.tls.certresolver=myresolver"
+      - "traefik.http.routers.minio.service=minio"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+    networks:
+      - web
 networks:
   web:
     name: web
